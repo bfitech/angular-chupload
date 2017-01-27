@@ -1,0 +1,24 @@
+{
+  "name": "chupload",
+  "authors": [
+    "Rendra Suroso <rs@cogsci.bandungfe.net>"
+  ],
+  "description": "Client-side chunk uploader.",
+  "main": "chupload.js",
+  "keywords": [
+    "upload"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.8"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

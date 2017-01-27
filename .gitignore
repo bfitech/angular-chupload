@@ -1,0 +1,11 @@
+
+
+*~
+*.swp
+*.log
+*.conf
+*.ini
+
+/node_modules/
+/bower_components/
+
