@@ -4,7 +4,7 @@ angular.module('chupload', [
 
 	function Uploader(
 		file, postUrl, postPrefix, postData, chunkSize,
-		cbChunkOK, cbFileOK, cbError, chunkHash
+		cbChunkOK, cbFileOK, cbError, chunkFingerprint
 	) {
 
 		// readonly
@@ -43,8 +43,8 @@ angular.module('chupload', [
 		this.cbError = cbError ?
 			cbError : function(){};
 
-		this.chunkHash = chunkHash ?
-			chunkHash : null;
+		this.chunkFingerprint = chunkFingerprint ?
+			chunkFingerprint : null;
 	}
 
 	Uploader.prototype.upload = function() {
@@ -94,8 +94,10 @@ angular.module('chupload', [
 		form.append(this.postPrefix + 'blob', chunk);
 
 		// hash if exists
-		if (this.chunkHash)
-			form.append(this.postPrefix + 'hash', this.chunkHash(chunk));
+		if (this.chunkFingerprint)
+			form.append(
+				this.postPrefix + 'fingerprint',
+				this.chunkFingerprint(chunk));
 
 		// additional post data
 		for (var i in this.postData)
@@ -143,7 +145,7 @@ angular.module('chupload', [
 		 * };
 		 */
 		uploadFiles: function(
-			event, postUrl, postData,
+			event, postUrl, postData, chunkSize,
 			cbChunkOK, cbFileOK, cbError
 		){
 			var uploader = this.uploader;
@@ -153,7 +155,7 @@ angular.module('chupload', [
 			while (i < event.target.files.length) {
 				fileObj = event.target.files[i];
 				(new Uploader(
-					fileObj, postUrl, null, postData, null,
+					fileObj, postUrl, null, postData, chunkSize,
 					cbChunkOK, cbFileOK, cbError
 				)).upload();
 				i++;
