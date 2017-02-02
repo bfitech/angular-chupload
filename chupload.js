@@ -141,7 +141,7 @@ angular.module('chupload', [
 		 * @example
 		 *
 		 * document.querySelector('#file-input').onchange = (event) => {
-		 *   ChunkUpload.uploadFiles(event, '/upload');
+		 *   ChunkUploader.uploadFiles(event, '/upload');
 		 * };
 		 */
 		uploadFiles: function(
