@@ -35,6 +35,8 @@ angular.module('chupload', [
 			this.chunkSize = chunkSize;
 		}
 
+		this.started = false;
+		this.cancelled = false;
 
 		this.cbChunkOK = cbChunkOK ?
 			cbChunkOK : function(){};
@@ -48,6 +50,10 @@ angular.module('chupload', [
 	}
 
 	Uploader.prototype.upload = function() {
+
+		// do not reuse instance
+		if (this.started)
+			return;
 
 		// never proceed without destination URL
 		if (!this.postUrl)
@@ -103,6 +109,8 @@ angular.module('chupload', [
 		for (var i in this.postData)
 			form.append(i, this.postData[i]);
 
+		this.started = true;
+
 		// begin sending, don't directly use $http.post to prevent
 		// global config being applied
 		$http({
@@ -125,10 +133,19 @@ angular.module('chupload', [
 				.toString().replace(/\.([0-9]{2}).+/, '.$1');
 			that.cbChunkOK(ret, that);
 			// on to the next chunk
+			if (that.cancelled)
+				return;
 			that._uploadChunk();
 		}, function(ret){
 			that.cbError(ret, that);
 		});
+	};
+
+	Uploader.prototype.cancel = function() {
+		if (!this.started || this.cancelled)
+			return false;
+		this.cancelled = true;
+		return true;
 	};
 
 	return {
