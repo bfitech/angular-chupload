@@ -4,7 +4,7 @@ angular.module('chupload', [
 
 	function Uploader(
 		file, postUrl, postPrefix, postData, chunkSize,
-		cbChunkOK, cbFileOK, cbError, chunkFingerprint
+		cbChunkOK, cbFileOK, cbError, getChunkFingerprint
 	) {
 
 		// readonly
@@ -17,7 +17,6 @@ angular.module('chupload', [
 		this.progress = -1;
 
 		this.chunkSize = 1024 * 100;
-		this.chunkIndex = 0;
 		this.chunkMax = -1;
 		this.chunkIndex = -1;
 
@@ -45,27 +44,27 @@ angular.module('chupload', [
 		this.cbError = cbError ?
 			cbError : function(){};
 
-		this.chunkFingerprint = chunkFingerprint ?
-			chunkFingerprint : null;
+		this.getChunkFingerprint = getChunkFingerprint ?
+			getChunkFingerprint : null;
 	}
 
 	Uploader.prototype.upload = function() {
 
 		// do not reuse instance
 		if (this.started)
-			return;
+			return 1;
 
 		// never proceed without destination URL
 		if (!this.postUrl)
-			return;
+			return 2;
 
 		// never allow instance reuse
-		if (this.chunkIndex > -1 || this.chunkProgres > -1)
-			return null;
+		if (this.chunkIndex > -1 || this.progress > -1)
+			return 3;
 
 		// verify file object
 		if (!this.file)
-			return null;
+			return 4;
 
 		// check browser compatibility
 		if ('slice' in this.file)
@@ -75,7 +74,7 @@ angular.module('chupload', [
 		else if ('webkitSlice' in this.file)
 			this.fileSlice = 'webkitSlice';
 		else
-			return null;
+			return 5;
 
 		// calculate chunk size
 		this.chunkMax = Math.floor(this.file.size / this.chunkSize);
@@ -83,6 +82,8 @@ angular.module('chupload', [
 
 		// begin upload chunks
 		this._uploadChunk();
+
+		return 0;
 	};
 
 	Uploader.prototype._uploadChunk = function() {
@@ -99,11 +100,11 @@ angular.module('chupload', [
 		form.append(this.postPrefix + 'index', this.chunkIndex);
 		form.append(this.postPrefix + 'blob', chunk);
 
-		// hash if exists
-		if (this.chunkFingerprint)
+		// get fingerprint if applies
+		if (this.getChunkFingerprint)
 			form.append(
 				this.postPrefix + 'fingerprint',
-				this.chunkFingerprint(chunk));
+				this.getChunkFingerprint(chunk));
 
 		// additional post data
 		for (var i in this.postData)
@@ -153,7 +154,8 @@ angular.module('chupload', [
 		Uploader: Uploader,
 
 		/**
-		 * Generic event handler with default chunk size 10kB.
+		 * Generic event handler with default chunk size 10kB and
+		 * no fingerprinting.
 		 *
 		 * @example
 		 *
