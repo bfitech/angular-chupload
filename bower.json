@@ -1,5 +1,5 @@
 {
-  "name": "chupload",
+  "name": "angular-chupload",
   "authors": [
     "Rendra Suroso <rs@cogsci.bandungfe.net>"
   ],
@@ -9,10 +9,10 @@
     "upload"
   ],
   "license": "MIT",
-  "homepage": "",
-  "private": true,
+  "homepage": "https://github.com/bfitech/angular-chupload",
+  "private": false,
   "dependencies": {
-    "angular": "^1.5.8"
+    "angular": ">=1.5"
   },
   "ignore": [
     "**/.*",
